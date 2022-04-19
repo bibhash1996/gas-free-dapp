@@ -19,6 +19,7 @@
     "hardhat": "^2.9.3"
   },
   "dependencies": {
+    "@opengsn/provider": "^2.2.6",
     "dotenv": "^16.0.0"
   }
 }

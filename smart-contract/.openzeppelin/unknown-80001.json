@@ -33,6 +33,40 @@
           }
         }
       }
+    },
+    "2eb0055d585ff374cc474a60cb99ba114b49111c22d2ce007627c277355cb06b": {
+      "address": "0xfe4E09c728E9d4584cAb5396b08a8d364A3a8892",
+      "txHash": "0x972808a395f604a5c6c6f510e4e20dac2994315e20b229baa9f65d0454e7e0fd",
+      "layout": {
+        "storage": [
+          {
+            "label": "_value",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256",
+            "contract": "Box",
+            "src": "contracts/Box.sol:6"
+          },
+          {
+            "label": "_trustedForwarder",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_address",
+            "contract": "BaseRelayRecipient",
+            "src": "@opengsn/contracts/src/BaseRelayRecipient.sol:16"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
     }
   }
 }
