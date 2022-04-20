@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import './App.css';
 import Web3 from 'web3'
-import Biconomy from "@biconomy/mexa";
+import {Biconomy} from "@biconomy/mexa";
 import { NotificationContainer, NotificationManager } from 'react-notifications';
 import 'react-notifications/lib/notifications.css';
 const { config } = require("./config");
+
+
 const showErrorMessage = message => {
   NotificationManager.error(message, "Error", 5000);
 };
@@ -18,9 +20,9 @@ const showInfoMessage = message => {
 
 let contract;
 let domainData = {
-  name: "Quote",
+  name: "Box",
   version: "1",
-  chainId: "42",  // Kovan
+  chainId: "80001",  // Mumbai testnet
   verifyingContract: config.contract.address
 };
 const domainType = [
@@ -44,15 +46,16 @@ function App() {
   const [quote, setQuote] = useState("This is a default quote");
   const [newQuote, setNewQuote] = useState("");
   useEffect(() => {
-
-
     if (!window.ethereum) {
       showErrorMessage("Metamask is required to use this DApp")
       return;
     }
 
     // NOTE: dappId is no longer needed in latest version of Biconomy SDK
-    const biconomy = new Biconomy(window.ethereum, { dappId: "5e9a0fc5667350123f4de8fe", apiKey: "q9oEztJM8.e8ed08a7-5b38-48e3-b4c0-f66e6b66f407" });
+    const biconomy = new Biconomy(window.ethereum, {  
+      apiKey: "_W8shfxTm.a4970fe5-4c49-4b92-b410-d088b7bb1550",
+      debug:true
+    });
 
     web3 = new Web3(biconomy);
 
@@ -61,6 +64,7 @@ function App() {
 
       await window.ethereum.enable();
       contract = new web3.eth.Contract(config.contract.abi, config.contract.address);
+      console.log("Address : ", window.ethereum.selectedAddress);
       startApp();
     }).onEvent(biconomy.ERROR, (error, message) => {
       // Handle error while initializing mexa
@@ -74,17 +78,19 @@ function App() {
   };
 
   async function startApp() {
-    const result = await contract.methods.getQuote().call({ from: window.ethereum.selectedAddress });
+    const result = await contract.methods.retrieve().call({ from: window.ethereum.selectedAddress });
     if (result.currentOwner !== "0x0000000000000000000000000000000000000000") {
-      setQuote(result.currentQuote)
-      setOwner(result.currentOwner)
+      console.log("Result : " , result)
+      setQuote(result)
+      setOwner(window.ethereum.selectedAddress)
     }
   }
   async function onButtonClickMeta() {
     console.log(window.ethereum.selectedAddress)
     setNewQuote("");
     console.log(contract)
-    let nonce = await contract.methods.nonces(window.ethereum.selectedAddress).call();
+    // let nonce = await contract.methods.nonces(window.ethereum.selectedAddress).call();
+    let nonce = await web3.eth.getTransactionCount(window.ethereum.selectedAddress) + 1;
     let message = {};
     message.nonce = parseInt(nonce);
     message.from = window.ethereum.selectedAddress;
@@ -123,7 +129,8 @@ function App() {
           console.log(window.ethereum.address, "userAddress")
   
           const promiEvent = contract.methods
-            .setQuoteMeta(window.ethereum.selectedAddress, newQuote, r, s, v)
+            // .setQuoteMeta(window.ethereum.selectedAddress, newQuote, r, s, v)
+            .store(newQuote)
             .send({
               from: window.ethereum.selectedAddress
             })
@@ -147,9 +154,9 @@ function App() {
   }
   return (
     <div className="App">
-      *Use this DApp only on Kovan Network
+      *Use this DApp only on Mumbai Network
       <header className="App-header">
-        <h1>Quotes</h1>
+        <h1>Gas free dApp</h1>
         <section className="main">
           <div className="mb-wrap mb-style-2">
             <blockquote cite="http://www.gutenberg.org/ebboks/11">
